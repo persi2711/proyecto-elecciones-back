@@ -3,6 +3,8 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -59,4 +61,7 @@ export class Account {
 
   @OneToMany(() => User, (user) => user.account)
   users: User[];
+
+  @Column({ type: 'boolean', default: false })
+  emailVerified: boolean;
 }

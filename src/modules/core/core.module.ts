@@ -17,6 +17,14 @@ import { Result } from './objects/events-data-module/results/result.entity';
 import { EventParticipant } from './objects/events-data-module/event-partipants/event-participants.entity';
 import { ContactInfo } from './objects/user-data-module/contact-Infos/contact-info.entity';
 import { Event } from './objects/events-data-module/events/events.entity';
+import { UserDataTrader } from './traders/user-data-traders/user-data-tarder.service';
+import { GeneralInfoDataTrader } from './traders/user-data-traders/general-info-data-trader.service';
+import { AccountDataTrader } from './traders/user-data-traders/account-data-trader.service';
+import { RegisterManagerService } from './managers/auth/register-manager.service';
+import { EmailVerificationToken } from './objects/application-data-module/auth/email-verification-tokens';
+import { UserQueryService } from './querys/auth/user-query.service';
+import { LoginManagerService } from './managers/auth/login-manager.service';
+import { EmailVerificationTokenDataTrader } from './traders/application-data-traders/email-verification-token-data-trader.service';
 
 @Module({
   imports: [
@@ -37,9 +45,18 @@ import { Event } from './objects/events-data-module/events/events.entity';
       Postulation,
       Result,
       EventParticipant,
+      EmailVerificationToken,
     ]),
-    InfrastructureModule,
   ],
-  providers: [],
+  providers: [
+    UserDataTrader,
+    GeneralInfoDataTrader,
+    AccountDataTrader,
+    RegisterManagerService,
+    LoginManagerService,
+    UserQueryService,
+    EmailVerificationTokenDataTrader,
+  ],
+  exports: [RegisterManagerService, LoginManagerService, UserQueryService],
 })
 export class CoreModule {}

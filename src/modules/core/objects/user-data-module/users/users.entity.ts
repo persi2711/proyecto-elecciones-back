@@ -30,7 +30,7 @@ export class User {
   @Column({ type: 'varchar', length: 100 })
   sector: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({ type: 'varchar', length: 100, nullable: true })
   state: string;
   @Column({
     type: 'enum',
@@ -55,12 +55,12 @@ export class User {
   @ManyToOne(() => Account, (account) => account.users, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'accountId' })
+  @JoinColumn({ name: 'idAccount' })
   account: Account;
 
-  @Index(['accountId'], { unique: true })
+  @Index(['idAccount'], { unique: true })
   @Column({ type: 'uuid' })
-  accountId: string;
+  idAccount: string;
   @OneToMany(() => MediaSocial, (media) => media.user)
   mediaSocials: MediaSocial[];
 

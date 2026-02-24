@@ -1,8 +1,3 @@
-enum Gender {
-  MALE = 'MALE',
-  FEMALE = 'FEMALE',
-  OTHER = 'OTHER',
-}
 import {
   Entity,
   Column,
@@ -13,6 +8,7 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { User } from '../users/users.entity';
+import { GenderEnum } from 'src/modules/core/enums/geneder-enum/gender-enum';
 
 @Entity({ name: 'GeneralInfo' })
 export class GeneralInfo {
@@ -39,9 +35,9 @@ export class GeneralInfo {
 
   @Column({
     type: 'enum',
-    enum: Gender,
+    enum: GenderEnum,
   })
-  genero: Gender;
+  genero: GenderEnum;
 
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
