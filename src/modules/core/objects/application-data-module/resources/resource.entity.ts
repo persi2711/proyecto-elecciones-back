@@ -10,8 +10,8 @@ import {
 } from 'typeorm';
 import { User } from '../../user-data-module/users/users.entity';
 export enum StorageProvider {
-  PROVIDER_A = 'PROVIDER_A',
-  PROVIDER_B = 'PROVIDER_B',
+  PROVIDER_A = 'CLOUDINARY',
+  PROVIDER_B = 'GCLOUD',
 }
 export enum ResourceType {
   IMAGE = 'IMAGE',
@@ -55,9 +55,9 @@ export class Resource {
   @ManyToOne(() => User, (user) => user.resources, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'idUser' })
   user: User;
-  @Index(['userId', 'typeResource'])
+  @Index(['idUser', 'typeResource'])
   @Column({ type: 'uuid' })
-  userId: string;
+  idUser: string;
 }

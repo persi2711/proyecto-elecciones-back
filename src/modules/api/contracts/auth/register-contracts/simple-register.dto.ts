@@ -33,6 +33,15 @@ export class AccountRegisterDto {
   password: string;
 }
 
+export class GoogleAccountRegisterDto {
+  @ApiProperty({
+    example: 'usuario@email.com',
+  })
+  @IsEmail()
+  @MaxLength(255)
+  email: string;
+}
+
 export class UserRegisterDto {
   @ApiPropertyOptional({ example: '5512345678' })
   @IsOptional()
@@ -80,6 +89,23 @@ export class SimpleRegisterDto {
   @ValidateNested()
   @Type(() => AccountRegisterDto)
   account: AccountRegisterDto;
+
+  @ApiProperty({ type: UserRegisterDto })
+  @ValidateNested()
+  @Type(() => UserRegisterDto)
+  user: UserRegisterDto;
+
+  @ApiProperty({ type: GeneralInfoRegisterDto })
+  @ValidateNested()
+  @Type(() => GeneralInfoRegisterDto)
+  generalInfo: GeneralInfoRegisterDto;
+}
+
+export class GoogleCreateAccountDto {
+  @ApiProperty({ type: GoogleAccountRegisterDto })
+  @ValidateNested()
+  @Type(() => GoogleAccountRegisterDto)
+  account: GoogleAccountRegisterDto;
 
   @ApiProperty({ type: UserRegisterDto })
   @ValidateNested()

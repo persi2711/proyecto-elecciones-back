@@ -11,12 +11,9 @@ export class EmailVerificationTokenDataTrader {
     @InjectRepository(EmailVerificationToken)
     private emailVerificationRepository: Repository<EmailVerificationToken>,
   ) {}
-  async createToken(
-    idAccount: string,
-    manager: EntityManager,
-  ): Promise<{ rawToken: string }> {
-    await manager.delete(EmailVerificationToken, {
-      idAccount: idAccount,
+  async createToken(idAccount: string): Promise<string> {
+    await this.emailVerificationRepository.delete({
+      idAccount,
     });
 
     const rawToken = randomBytes(32).toString('hex');
@@ -26,14 +23,17 @@ export class EmailVerificationTokenDataTrader {
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 15);
 
-    const tokenEntity = manager.create(EmailVerificationToken, {
-      idAccount: idAccount,
+    const tokenEntity = this.emailVerificationRepository.create({
+      idAccount,
       tokenHash,
       expiresAt,
     });
-    await manager.save(tokenEntity);
-    return { rawToken };
+
+    await this.emailVerificationRepository.save(tokenEntity);
+
+    return rawToken;
   }
+
   async validateAccount(token: string) {
     const tokenHash = createHash('sha256').update(token).digest('hex');
 

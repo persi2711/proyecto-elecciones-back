@@ -2,13 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { authService } from './auth.service';
+import { SesionAuthService } from './sesion-auth.service';
 import { CoreModule } from 'src/modules/core/core.module';
 import { JwtStrategy } from './strategis/jwt.strategy';
 
 @Module({
   controllers: [],
-  providers: [authService, JwtStrategy],
+  providers: [SesionAuthService, JwtStrategy],
   imports: [
     ConfigModule,
     CoreModule,
@@ -26,6 +26,6 @@ import { JwtStrategy } from './strategis/jwt.strategy';
       },
     }),
   ],
-  exports: [authService, JwtStrategy, PassportModule, JwtModule],
+  exports: [SesionAuthService, JwtStrategy, PassportModule, JwtModule],
 })
-export class AuthModule {}
+export class SesionAuthModule {}

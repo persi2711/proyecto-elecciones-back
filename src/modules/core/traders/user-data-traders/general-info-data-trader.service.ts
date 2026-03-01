@@ -8,7 +8,7 @@ export class GeneralInfoDataTrader {
   constructor() {}
   async createGeneralInfo(
     dto: GeneralInfoRegisterDto,
-    userId: string,
+    idUser: string,
     manager: EntityManager,
   ): Promise<GeneralInfo> {
     const generalInfo = manager.create(GeneralInfo, {
@@ -16,7 +16,7 @@ export class GeneralInfoDataTrader {
       apellidoP: dto.apellidoP,
       apellidoM: dto.apellidoM,
       genero: dto.genero,
-      idUser: userId,
+      idUser: idUser,
     });
 
     return manager.save(generalInfo);

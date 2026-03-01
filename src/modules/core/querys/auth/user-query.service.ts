@@ -13,6 +13,7 @@ export class UserQueryService {
   async findActiveById(id: string): Promise<Account | null> {
     return this.userRepository.findOne({
       where: { idAccount: id, isActive: true },
+      relations: ['users'],
     });
   }
 }

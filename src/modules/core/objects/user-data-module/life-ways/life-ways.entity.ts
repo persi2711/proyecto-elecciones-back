@@ -59,9 +59,9 @@ export class LifeWay {
   @ManyToOne(() => User, (user) => user.lifeWays, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'idUser' })
   user: User;
 
   @Column({ type: 'uuid' })
-  userId: string;
+  idUser: string;
 }

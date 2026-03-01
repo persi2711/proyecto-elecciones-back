@@ -25,6 +25,8 @@ import { EmailVerificationToken } from './objects/application-data-module/auth/e
 import { UserQueryService } from './querys/auth/user-query.service';
 import { LoginManagerService } from './managers/auth/login-manager.service';
 import { EmailVerificationTokenDataTrader } from './traders/application-data-traders/email-verification-token-data-trader.service';
+import { UpdateUserManagerService } from './managers/user/update-user-manager.service';
+import { ResourceDataTrader } from './traders/application-data-traders/resource-data-trader.service';
 
 @Module({
   imports: [
@@ -56,7 +58,14 @@ import { EmailVerificationTokenDataTrader } from './traders/application-data-tra
     LoginManagerService,
     UserQueryService,
     EmailVerificationTokenDataTrader,
+    UpdateUserManagerService,
+    ResourceDataTrader,
   ],
-  exports: [RegisterManagerService, LoginManagerService, UserQueryService],
+  exports: [
+    RegisterManagerService,
+    LoginManagerService,
+    UserQueryService,
+    UpdateUserManagerService,
+  ],
 })
 export class CoreModule {}

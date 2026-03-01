@@ -43,10 +43,10 @@ export class MediaSocial {
   @ManyToOne(() => User, (user) => user.mediaSocials, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'idUser' })
   user: User;
 
-  @Index(['userId', 'typeMediaSocial'], { unique: true })
+  @Index(['idUser', 'typeMediaSocial'], { unique: true })
   @Column({ type: 'uuid' })
-  userId: string;
+  idUser: string;
 }

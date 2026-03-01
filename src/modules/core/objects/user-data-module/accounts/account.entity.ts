@@ -24,6 +24,7 @@ export class Account {
     type: 'varchar',
     length: 255,
     select: false,
+    nullable: true,
   })
   password: string;
 
@@ -44,6 +45,14 @@ export class Account {
   isAdmin: boolean;
   @Column({ type: 'boolean', default: true })
   isActive: boolean;
+
+  @Column({ type: 'boolean', default: false })
+  isAccountVerified: boolean;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  emailCooldownUntil: Date | null;
+  @Column({ type: 'boolean', default: false })
+  isGoogleAccount: boolean;
 
   @Column({
     type: 'varchar',
