@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class InitialMigration1772452561241 implements MigrationInterface {
-    name = 'InitialMigration1772452561241'
+export class InitialMigration1772453864863 implements MigrationInterface {
+    name = 'InitialMigration1772453864863'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "Accounts" ("idAccount" uuid NOT NULL DEFAULT uuid_generate_v4(), "email" character varying(255) NOT NULL, "password" character varying(255), "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "isAdmin" boolean NOT NULL DEFAULT false, "isActive" boolean NOT NULL DEFAULT true, "isAccountVerified" boolean NOT NULL DEFAULT false, "emailCooldownUntil" TIMESTAMP WITH TIME ZONE, "isGoogleAccount" boolean NOT NULL DEFAULT false, "sessionTokenHash" character varying(255), "sessionTokenExpiresAt" TIMESTAMP WITH TIME ZONE, "emailVerified" boolean NOT NULL DEFAULT false, CONSTRAINT "PK_34adc78b9645832601a391eaf15" PRIMARY KEY ("idAccount"))`);
