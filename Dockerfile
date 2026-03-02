@@ -3,13 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copiar archivos de definición de dependencias
 COPY package*.json ./
-
-# Instalar todas las dependencias (incluidas las de desarrollo para el build)
 RUN npm install
 
-# Copiar el resto del código y construir el proyecto
 COPY . .
 RUN npm run build
 
@@ -18,15 +14,23 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copiamos solo el package.json y el lock para instalar dependencias de producción
+# En NestJS, para correr migraciones a veces necesitamos dependencias que 
+# no están en --omit=dev (como typeorm o ts-node). 
+# Si tu app usa las migraciones compiladas en JS, esto funcionará:
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm install --only=production
 
-# Copiamos la carpeta dist generada en la etapa anterior
+# Copiamos la carpeta dist con TODO (código de la app + migraciones compiladas)
 COPY --from=builder /app/dist ./dist
 
-# Railway inyecta la variable PORT, nos aseguramos de exponerla
+# EXTREMADAMENTE IMPORTANTE: 
+# Si tus archivos de migración están en src/migrations, 
+# tras el build estarán en dist/migrations.
+# Asegúrate de que tu DataSource apunte a 'dist/migrations/*.js'
+
 EXPOSE 8080
 
-# Comando para arrancar la app de NestJS
-CMD ["node", "dist/main"]
+# Usamos un shell command para encadenar la ejecución
+# 1. Ejecutamos migraciones
+# 2. Si tienen éxito, arrancamos la app
+CMD npx typeorm migration:run -d dist/data-source.js && node dist/main
