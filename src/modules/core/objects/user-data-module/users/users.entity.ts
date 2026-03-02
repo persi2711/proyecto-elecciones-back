@@ -1,5 +1,3 @@
-import { ActivityStatusEnum } from 'src/modules/core/enums/active-enum/active-enum';
-import { VisibilityStatusEnum } from 'src/modules/core/enums/visibility-enum/visibility-enum';
 import {
   Column,
   CreateDateColumn,
@@ -19,6 +17,8 @@ import { Vote } from '../../events-data-module/votes/votes.entity';
 import { Postulation } from '../../events-data-module/postulations/postulation.entity';
 import { Result } from '../../events-data-module/results/result.entity';
 import { EventParticipant } from '../../events-data-module/event-partipants/event-participants.entity';
+import { ActivityStatusEnum } from '../../../enums/active-enum/active-enum';
+import { VisibilityStatusEnum } from '../../../enums/visibility-enum/visibility-enum';
 
 @Entity({ name: 'Users' })
 export class User {

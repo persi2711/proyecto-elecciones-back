@@ -1,4 +1,4 @@
-import { VisibilityStatusEnum } from 'src/modules/core/enums/visibility-enum/visibility-enum';
+import { VisibilityStatusEnum } from '../../../enums/visibility-enum/visibility-enum';
 import {
   Entity,
   Column,

@@ -8,7 +8,7 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { User } from '../users/users.entity';
-import { GenderEnum } from 'src/modules/core/enums/geneder-enum/gender-enum';
+import { GenderEnum } from '../../../enums/geneder-enum/gender-enum';
 
 @Entity({ name: 'GeneralInfo' })
 export class GeneralInfo {
