@@ -12,6 +12,8 @@ async function bootstrap() {
       'http://localhost:4200',
       'http://192.168.100.114:4200',
       'http://172.23.64.1:4200',
+      'http://impulsociudadanobc.mx',
+      'http://impulsociudadanobc.org',
     ], // Reemplaza con el dominio de tu frontend
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Si necesitas enviar cookies o credenciales
@@ -31,6 +33,7 @@ async function bootstrap() {
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
-  await app.listen(3000);
+  const port = process.env.PORT || 3000;
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap();
