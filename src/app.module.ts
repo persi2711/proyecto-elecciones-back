@@ -18,8 +18,6 @@ import { CoreModule } from './modules/core/core.module';
       database: process.env.DB_NAME,
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
-      autoLoadEntities: true,
-      synchronize: true,
     }),
     ApiModule,
     AplicationModule,
