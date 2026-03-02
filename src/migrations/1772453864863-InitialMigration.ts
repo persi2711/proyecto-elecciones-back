@@ -1,138 +1,325 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class InitialMigration1772453864863 implements MigrationInterface {
-    name = 'InitialMigration1772453864863'
+  name = 'InitialMigration1772453864863';
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE "Accounts" ("idAccount" uuid NOT NULL DEFAULT uuid_generate_v4(), "email" character varying(255) NOT NULL, "password" character varying(255), "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "isAdmin" boolean NOT NULL DEFAULT false, "isActive" boolean NOT NULL DEFAULT true, "isAccountVerified" boolean NOT NULL DEFAULT false, "emailCooldownUntil" TIMESTAMP WITH TIME ZONE, "isGoogleAccount" boolean NOT NULL DEFAULT false, "sessionTokenHash" character varying(255), "sessionTokenExpiresAt" TIMESTAMP WITH TIME ZONE, "emailVerified" boolean NOT NULL DEFAULT false, CONSTRAINT "PK_34adc78b9645832601a391eaf15" PRIMARY KEY ("idAccount"))`);
-        await queryRunner.query(`CREATE UNIQUE INDEX "IDX_0c5666efc38b6f023b7814c73d" ON "Accounts" ("email") `);
-        await queryRunner.query(`CREATE TYPE "public"."MediaSocial_typemediasocial_enum" AS ENUM('FACEBOOK', 'X', 'LINKEDIN', 'YOUTUBE', 'INSTAGRAM')`);
-        await queryRunner.query(`CREATE TABLE "MediaSocial" ("idMediaSocial" SERIAL NOT NULL, "url" character varying(500) NOT NULL, "title" character varying(100) NOT NULL, "typeMediaSocial" "public"."MediaSocial_typemediasocial_enum" NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idUser" uuid NOT NULL, CONSTRAINT "PK_fae9976a5d9450a5d9c57d6c270" PRIMARY KEY ("idMediaSocial"))`);
-        await queryRunner.query(`CREATE UNIQUE INDEX "IDX_e1f9349c9d527adb5fb9ed7fb5" ON "MediaSocial" ("idUser") `);
-        await queryRunner.query(`CREATE TYPE "public"."LifeWay_typelifeway_enum" AS ENUM('PROFESSIONAL', 'EDUCATIONAL', 'CERTIFICATIONAL', 'SOCIAL')`);
-        await queryRunner.query(`CREATE TYPE "public"."LifeWay_visibility_enum" AS ENUM('PUBLIC', 'PRIVATE')`);
-        await queryRunner.query(`CREATE TABLE "LifeWay" ("idLifeWay" SERIAL NOT NULL, "typeLifeWay" "public"."LifeWay_typelifeway_enum" NOT NULL, "title" character varying(150) NOT NULL, "description" text, "institution" character varying(150), "initDate" date, "finishDate" date, "visibility" "public"."LifeWay_visibility_enum" NOT NULL DEFAULT 'PRIVATE', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idUser" uuid NOT NULL, CONSTRAINT "PK_37c8c31b125a8aefe5257f97f83" PRIMARY KEY ("idLifeWay"))`);
-        await queryRunner.query(`CREATE TYPE "public"."Resources_typeresource_enum" AS ENUM('IMAGE', 'DOCUMENT')`);
-        await queryRunner.query(`CREATE TYPE "public"."Resources_provider_enum" AS ENUM('CLOUDINARY', 'GCLOUD')`);
-        await queryRunner.query(`CREATE TABLE "Resources" ("idResource" SERIAL NOT NULL, "typeResource" "public"."Resources_typeresource_enum" NOT NULL, "provider" "public"."Resources_provider_enum" NOT NULL, "key" character varying(500) NOT NULL, "root" character varying(255), "metadata" jsonb, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idUser" uuid NOT NULL, CONSTRAINT "PK_7bbc0f8f2044a34caf0bbcf358c" PRIMARY KEY ("idResource"))`);
-        await queryRunner.query(`CREATE INDEX "IDX_72b00dec8a1be85bc7b50fcef0" ON "Resources" ("idUser") `);
-        await queryRunner.query(`CREATE TYPE "public"."TextsEvents_typetext_enum" AS ENUM('RULES', 'PROFILE', 'REQUIREMENTS')`);
-        await queryRunner.query(`CREATE TABLE "TextsEvents" ("idText" SERIAL NOT NULL, "title" character varying(200) NOT NULL, "content" text NOT NULL, "blackTitle" boolean NOT NULL DEFAULT false, "blackContent" boolean NOT NULL DEFAULT false, "typeText" "public"."TextsEvents_typetext_enum" NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "order" integer NOT NULL DEFAULT '0', "idEvent" uuid NOT NULL, CONSTRAINT "PK_e740683274c197146368f97dab6" PRIMARY KEY ("idText"))`);
-        await queryRunner.query(`CREATE TABLE "AskOptions" ("idAskOption" SERIAL NOT NULL, "content" character varying(300) NOT NULL, "idAsk" integer NOT NULL, CONSTRAINT "PK_fa4005f356862719f672e4373d5" PRIMARY KEY ("idAskOption"))`);
-        await queryRunner.query(`CREATE TYPE "public"."Asks_typeask_enum" AS ENUM('OPEN', 'SELECT')`);
-        await queryRunner.query(`CREATE TABLE "Asks" ("idAsk" SERIAL NOT NULL, "typeAsk" "public"."Asks_typeask_enum" NOT NULL, "content" text NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_3575bce267da5a58e237984daa9" PRIMARY KEY ("idAsk"))`);
-        await queryRunner.query(`CREATE TABLE "Answers" ("idAnswer" SERIAL NOT NULL, "content" text NOT NULL, "idAsk" integer NOT NULL, "idPostulation" integer NOT NULL, CONSTRAINT "PK_f41729971e6bba6854fb1e834c2" PRIMARY KEY ("idAnswer"))`);
-        await queryRunner.query(`CREATE UNIQUE INDEX "IDX_255212446e8092cd1d9ef366a9" ON "Answers" ("idPostulation", "idAsk") `);
-        await queryRunner.query(`CREATE TYPE "public"."Results_result_enum" AS ENUM('APPROVED', 'REJECTED')`);
-        await queryRunner.query(`CREATE TABLE "Results" ("idResult" SERIAL NOT NULL, "result" "public"."Results_result_enum" NOT NULL, "description" text, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idPostulation" integer NOT NULL, "idUserEval" uuid NOT NULL, CONSTRAINT "REL_e360464977a29934a3c6a52151" UNIQUE ("idPostulation"), CONSTRAINT "PK_038853b2427ba1df868c851060f" PRIMARY KEY ("idResult"))`);
-        await queryRunner.query(`CREATE UNIQUE INDEX "IDX_e360464977a29934a3c6a52151" ON "Results" ("idPostulation") `);
-        await queryRunner.query(`CREATE UNIQUE INDEX "IDX_e360464977a29934a3c6a52151" ON "Results" ("idPostulation") `);
-        await queryRunner.query(`CREATE TYPE "public"."Postulations_status_enum" AS ENUM('EVALUATION', 'APPROVED', 'REJECTED')`);
-        await queryRunner.query(`CREATE TABLE "Postulations" ("idPostulation" SERIAL NOT NULL, "status" "public"."Postulations_status_enum" NOT NULL DEFAULT 'EVALUATION', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idUser" uuid NOT NULL, "idEvent" uuid NOT NULL, CONSTRAINT "PK_2f1561bf23b75195b1cd51046eb" PRIMARY KEY ("idPostulation"))`);
-        await queryRunner.query(`CREATE TABLE "EventParticipants" ("idEventParticipant" SERIAL NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idUser" uuid NOT NULL, "idEvent" uuid NOT NULL, CONSTRAINT "PK_629c59f6ab11e69954e8b2f6b28" PRIMARY KEY ("idEventParticipant"))`);
-        await queryRunner.query(`CREATE UNIQUE INDEX "IDX_b3ed11c2850679c84b9a93b482" ON "EventParticipants" ("idUser") `);
-        await queryRunner.query(`CREATE UNIQUE INDEX "IDX_d3d2318656f7e161bca4a459d7" ON "EventParticipants" ("idUser", "idEvent") `);
-        await queryRunner.query(`CREATE TYPE "public"."Events_status_enum" AS ENUM('DRAFT', 'REGISTRATION_OPEN', 'VOTING_OPEN', 'CLOSED', 'FINISHED')`);
-        await queryRunner.query(`CREATE TABLE "Events" ("idEvent" uuid NOT NULL DEFAULT uuid_generate_v4(), "nombre" character varying(200) NOT NULL, "descripcion" text, "uniqueVotes" boolean NOT NULL DEFAULT true, "uniqueParticipants" boolean NOT NULL DEFAULT false, "status" "public"."Events_status_enum" NOT NULL DEFAULT 'DRAFT', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_ea1d2172ced9ff5a6ad9bd73f15" PRIMARY KEY ("idEvent"))`);
-        await queryRunner.query(`CREATE TABLE "Votes" ("idVote" SERIAL NOT NULL, "ipAddress" inet, "deviceData" jsonb, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idEvent" uuid NOT NULL, "voterId" uuid NOT NULL, "candidateId" uuid NOT NULL, CONSTRAINT "PK_0db2e5ef24d1fe49b1d6ed10a1d" PRIMARY KEY ("idVote"))`);
-        await queryRunner.query(`CREATE INDEX "IDX_2e93fb6f91b21b23e31275a7d2" ON "Votes" ("voterId") `);
-        await queryRunner.query(`CREATE INDEX "IDX_7a00e456ca7ea3cb494561ef3d" ON "Votes" ("candidateId") `);
-        await queryRunner.query(`CREATE INDEX "IDX_86857ac92b4857a088f55799b7" ON "Votes" ("idEvent") `);
-        await queryRunner.query(`CREATE TYPE "public"."Users_activitystatus_enum" AS ENUM('ACTIVE', 'INACTIVE')`);
-        await queryRunner.query(`CREATE TYPE "public"."Users_visibility_enum" AS ENUM('PUBLIC', 'PRIVATE')`);
-        await queryRunner.query(`CREATE TABLE "Users" ("idUser" uuid NOT NULL DEFAULT uuid_generate_v4(), "telefono" character varying(20), "sector" character varying(100) NOT NULL, "state" character varying(100), "activityStatus" "public"."Users_activitystatus_enum" NOT NULL DEFAULT 'ACTIVE', "visibility" "public"."Users_visibility_enum" NOT NULL DEFAULT 'PRIVATE', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idAccount" uuid NOT NULL, CONSTRAINT "PK_2302601d4c9fd52cd899deafb32" PRIMARY KEY ("idUser"))`);
-        await queryRunner.query(`CREATE UNIQUE INDEX "IDX_54bbf2bf161a4c679371f1533d" ON "Users" ("idAccount") `);
-        await queryRunner.query(`CREATE TYPE "public"."GeneralInfo_genero_enum" AS ENUM('MALE', 'FEMALE', 'OTHER')`);
-        await queryRunner.query(`CREATE TABLE "GeneralInfo" ("idUser" uuid NOT NULL, "nombre" character varying(100) NOT NULL, "apellidoP" character varying(100) NOT NULL, "apellidoM" character varying(100), "descripcion" text, "genero" "public"."GeneralInfo_genero_enum" NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_a45ffc9ddef09d55d72a3f2abcd" PRIMARY KEY ("idUser"))`);
-        await queryRunner.query(`CREATE TABLE "ContactInfo" ("idUser" uuid NOT NULL, "publicWebPage" character varying(500), "publicPhone" character varying(20), "publicEmail" character varying(255), "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_214e121bf4c3c2cb819efa1ac29" PRIMARY KEY ("idUser"))`);
-        await queryRunner.query(`CREATE TABLE "EmailVerificationTokens" ("idToken" SERIAL NOT NULL, "idAccount" uuid NOT NULL, "tokenHash" character varying(255) NOT NULL, "expiresAt" TIMESTAMP WITH TIME ZONE NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_d2d1e5906b8e4ee3b7c93d4c578" PRIMARY KEY ("idToken"))`);
-        await queryRunner.query(`CREATE UNIQUE INDEX "IDX_537d3e56e2a911f763b6c006bc" ON "EmailVerificationTokens" ("idAccount") `);
-        await queryRunner.query(`ALTER TABLE "MediaSocial" ADD CONSTRAINT "FK_e1f9349c9d527adb5fb9ed7fb54" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "LifeWay" ADD CONSTRAINT "FK_2fc7720e90664e3b107f7e4f403" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "Resources" ADD CONSTRAINT "FK_72b00dec8a1be85bc7b50fcef02" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "TextsEvents" ADD CONSTRAINT "FK_44a885fff2a1cc22631646a39e5" FOREIGN KEY ("idEvent") REFERENCES "Events"("idEvent") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "AskOptions" ADD CONSTRAINT "FK_4d16a36136a7ce578576196e11d" FOREIGN KEY ("idAsk") REFERENCES "Asks"("idAsk") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "Answers" ADD CONSTRAINT "FK_91b8e1ca37805b494771af440dc" FOREIGN KEY ("idAsk") REFERENCES "Asks"("idAsk") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "Answers" ADD CONSTRAINT "FK_5093a7739cfad4216f717115323" FOREIGN KEY ("idPostulation") REFERENCES "Postulations"("idPostulation") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "Results" ADD CONSTRAINT "FK_e360464977a29934a3c6a521517" FOREIGN KEY ("idPostulation") REFERENCES "Postulations"("idPostulation") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "Results" ADD CONSTRAINT "FK_603ea62fbfe07d7f5a52583f4ad" FOREIGN KEY ("idUserEval") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "Postulations" ADD CONSTRAINT "FK_9811be705215267532987187891" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "Postulations" ADD CONSTRAINT "FK_30080310840f881a795d1a3a4ad" FOREIGN KEY ("idEvent") REFERENCES "Events"("idEvent") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "EventParticipants" ADD CONSTRAINT "FK_b3ed11c2850679c84b9a93b482d" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "EventParticipants" ADD CONSTRAINT "FK_7e43572e2187f0555d2728dfae1" FOREIGN KEY ("idEvent") REFERENCES "Events"("idEvent") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "Votes" ADD CONSTRAINT "FK_86857ac92b4857a088f55799b7a" FOREIGN KEY ("idEvent") REFERENCES "Events"("idEvent") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "Votes" ADD CONSTRAINT "FK_2e93fb6f91b21b23e31275a7d20" FOREIGN KEY ("voterId") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "Votes" ADD CONSTRAINT "FK_7a00e456ca7ea3cb494561ef3d8" FOREIGN KEY ("candidateId") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "Users" ADD CONSTRAINT "FK_54bbf2bf161a4c679371f1533de" FOREIGN KEY ("idAccount") REFERENCES "Accounts"("idAccount") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "GeneralInfo" ADD CONSTRAINT "FK_a45ffc9ddef09d55d72a3f2abcd" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "ContactInfo" ADD CONSTRAINT "FK_214e121bf4c3c2cb819efa1ac29" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "EmailVerificationTokens" ADD CONSTRAINT "FK_537d3e56e2a911f763b6c006bc8" FOREIGN KEY ("idAccount") REFERENCES "Accounts"("idAccount") ON DELETE CASCADE ON UPDATE NO ACTION`);
-    }
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `CREATE TABLE "Accounts" ("idAccount" uuid NOT NULL DEFAULT uuid_generate_v4(), "email" character varying(255) NOT NULL, "password" character varying(255), "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "isAdmin" boolean NOT NULL DEFAULT false, "isActive" boolean NOT NULL DEFAULT true, "isAccountVerified" boolean NOT NULL DEFAULT false, "emailCooldownUntil" TIMESTAMP WITH TIME ZONE, "isGoogleAccount" boolean NOT NULL DEFAULT false, "sessionTokenHash" character varying(255), "sessionTokenExpiresAt" TIMESTAMP WITH TIME ZONE, "emailVerified" boolean NOT NULL DEFAULT false, CONSTRAINT "PK_34adc78b9645832601a391eaf15" PRIMARY KEY ("idAccount"))`,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "IDX_0c5666efc38b6f023b7814c73d" ON "Accounts" ("email") `,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."MediaSocial_typemediasocial_enum" AS ENUM('FACEBOOK', 'X', 'LINKEDIN', 'YOUTUBE', 'INSTAGRAM')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "MediaSocial" ("idMediaSocial" SERIAL NOT NULL, "url" character varying(500) NOT NULL, "title" character varying(100) NOT NULL, "typeMediaSocial" "public"."MediaSocial_typemediasocial_enum" NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idUser" uuid NOT NULL, CONSTRAINT "PK_fae9976a5d9450a5d9c57d6c270" PRIMARY KEY ("idMediaSocial"))`,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "IDX_e1f9349c9d527adb5fb9ed7fb5" ON "MediaSocial" ("idUser") `,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."LifeWay_typelifeway_enum" AS ENUM('PROFESSIONAL', 'EDUCATIONAL', 'CERTIFICATIONAL', 'SOCIAL')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."LifeWay_visibility_enum" AS ENUM('PUBLIC', 'PRIVATE')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "LifeWay" ("idLifeWay" SERIAL NOT NULL, "typeLifeWay" "public"."LifeWay_typelifeway_enum" NOT NULL, "title" character varying(150) NOT NULL, "description" text, "institution" character varying(150), "initDate" date, "finishDate" date, "visibility" "public"."LifeWay_visibility_enum" NOT NULL DEFAULT 'PRIVATE', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idUser" uuid NOT NULL, CONSTRAINT "PK_37c8c31b125a8aefe5257f97f83" PRIMARY KEY ("idLifeWay"))`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."Resources_typeresource_enum" AS ENUM('IMAGE', 'DOCUMENT')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."Resources_provider_enum" AS ENUM('CLOUDINARY', 'GCLOUD')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "Resources" ("idResource" SERIAL NOT NULL, "typeResource" "public"."Resources_typeresource_enum" NOT NULL, "provider" "public"."Resources_provider_enum" NOT NULL, "key" character varying(500) NOT NULL, "root" character varying(255), "metadata" jsonb, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idUser" uuid NOT NULL, CONSTRAINT "PK_7bbc0f8f2044a34caf0bbcf358c" PRIMARY KEY ("idResource"))`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_72b00dec8a1be85bc7b50fcef0" ON "Resources" ("idUser") `,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."TextsEvents_typetext_enum" AS ENUM('RULES', 'PROFILE', 'REQUIREMENTS')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "TextsEvents" ("idText" SERIAL NOT NULL, "title" character varying(200) NOT NULL, "content" text NOT NULL, "blackTitle" boolean NOT NULL DEFAULT false, "blackContent" boolean NOT NULL DEFAULT false, "typeText" "public"."TextsEvents_typetext_enum" NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "order" integer NOT NULL DEFAULT '0', "idEvent" uuid NOT NULL, CONSTRAINT "PK_e740683274c197146368f97dab6" PRIMARY KEY ("idText"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "AskOptions" ("idAskOption" SERIAL NOT NULL, "content" character varying(300) NOT NULL, "idAsk" integer NOT NULL, CONSTRAINT "PK_fa4005f356862719f672e4373d5" PRIMARY KEY ("idAskOption"))`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."Asks_typeask_enum" AS ENUM('OPEN', 'SELECT')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "Asks" ("idAsk" SERIAL NOT NULL, "typeAsk" "public"."Asks_typeask_enum" NOT NULL, "content" text NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_3575bce267da5a58e237984daa9" PRIMARY KEY ("idAsk"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "Answers" ("idAnswer" SERIAL NOT NULL, "content" text NOT NULL, "idAsk" integer NOT NULL, "idPostulation" integer NOT NULL, CONSTRAINT "PK_f41729971e6bba6854fb1e834c2" PRIMARY KEY ("idAnswer"))`,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "IDX_255212446e8092cd1d9ef366a9" ON "Answers" ("idPostulation", "idAsk") `,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."Results_result_enum" AS ENUM('APPROVED', 'REJECTED')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "Results" ("idResult" SERIAL NOT NULL, "result" "public"."Results_result_enum" NOT NULL, "description" text, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idPostulation" integer NOT NULL, "idUserEval" uuid NOT NULL, CONSTRAINT "REL_e360464977a29934a3c6a52151" UNIQUE ("idPostulation"), CONSTRAINT "PK_038853b2427ba1df868c851060f" PRIMARY KEY ("idResult"))`,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "IDX_e360464977a29934a3c6a52151" ON "Results" ("idPostulation") `,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."Postulations_status_enum" AS ENUM('EVALUATION', 'APPROVED', 'REJECTED')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "Postulations" ("idPostulation" SERIAL NOT NULL, "status" "public"."Postulations_status_enum" NOT NULL DEFAULT 'EVALUATION', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idUser" uuid NOT NULL, "idEvent" uuid NOT NULL, CONSTRAINT "PK_2f1561bf23b75195b1cd51046eb" PRIMARY KEY ("idPostulation"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "EventParticipants" ("idEventParticipant" SERIAL NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idUser" uuid NOT NULL, "idEvent" uuid NOT NULL, CONSTRAINT "PK_629c59f6ab11e69954e8b2f6b28" PRIMARY KEY ("idEventParticipant"))`,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "IDX_b3ed11c2850679c84b9a93b482" ON "EventParticipants" ("idUser") `,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "IDX_d3d2318656f7e161bca4a459d7" ON "EventParticipants" ("idUser", "idEvent") `,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."Events_status_enum" AS ENUM('DRAFT', 'REGISTRATION_OPEN', 'VOTING_OPEN', 'CLOSED', 'FINISHED')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "Events" ("idEvent" uuid NOT NULL DEFAULT uuid_generate_v4(), "nombre" character varying(200) NOT NULL, "descripcion" text, "uniqueVotes" boolean NOT NULL DEFAULT true, "uniqueParticipants" boolean NOT NULL DEFAULT false, "status" "public"."Events_status_enum" NOT NULL DEFAULT 'DRAFT', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_ea1d2172ced9ff5a6ad9bd73f15" PRIMARY KEY ("idEvent"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "Votes" ("idVote" SERIAL NOT NULL, "ipAddress" inet, "deviceData" jsonb, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idEvent" uuid NOT NULL, "voterId" uuid NOT NULL, "candidateId" uuid NOT NULL, CONSTRAINT "PK_0db2e5ef24d1fe49b1d6ed10a1d" PRIMARY KEY ("idVote"))`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_2e93fb6f91b21b23e31275a7d2" ON "Votes" ("voterId") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_7a00e456ca7ea3cb494561ef3d" ON "Votes" ("candidateId") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_86857ac92b4857a088f55799b7" ON "Votes" ("idEvent") `,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."Users_activitystatus_enum" AS ENUM('ACTIVE', 'INACTIVE')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."Users_visibility_enum" AS ENUM('PUBLIC', 'PRIVATE')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "Users" ("idUser" uuid NOT NULL DEFAULT uuid_generate_v4(), "telefono" character varying(20), "sector" character varying(100) NOT NULL, "state" character varying(100), "activityStatus" "public"."Users_activitystatus_enum" NOT NULL DEFAULT 'ACTIVE', "visibility" "public"."Users_visibility_enum" NOT NULL DEFAULT 'PRIVATE', "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "idAccount" uuid NOT NULL, CONSTRAINT "PK_2302601d4c9fd52cd899deafb32" PRIMARY KEY ("idUser"))`,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "IDX_54bbf2bf161a4c679371f1533d" ON "Users" ("idAccount") `,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "public"."GeneralInfo_genero_enum" AS ENUM('MALE', 'FEMALE', 'OTHER')`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "GeneralInfo" ("idUser" uuid NOT NULL, "nombre" character varying(100) NOT NULL, "apellidoP" character varying(100) NOT NULL, "apellidoM" character varying(100), "descripcion" text, "genero" "public"."GeneralInfo_genero_enum" NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_a45ffc9ddef09d55d72a3f2abcd" PRIMARY KEY ("idUser"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "ContactInfo" ("idUser" uuid NOT NULL, "publicWebPage" character varying(500), "publicPhone" character varying(20), "publicEmail" character varying(255), "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_214e121bf4c3c2cb819efa1ac29" PRIMARY KEY ("idUser"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "EmailVerificationTokens" ("idToken" SERIAL NOT NULL, "idAccount" uuid NOT NULL, "tokenHash" character varying(255) NOT NULL, "expiresAt" TIMESTAMP WITH TIME ZONE NOT NULL, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_d2d1e5906b8e4ee3b7c93d4c578" PRIMARY KEY ("idToken"))`,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "IDX_537d3e56e2a911f763b6c006bc" ON "EmailVerificationTokens" ("idAccount") `,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "MediaSocial" ADD CONSTRAINT "FK_e1f9349c9d527adb5fb9ed7fb54" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "LifeWay" ADD CONSTRAINT "FK_2fc7720e90664e3b107f7e4f403" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Resources" ADD CONSTRAINT "FK_72b00dec8a1be85bc7b50fcef02" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "TextsEvents" ADD CONSTRAINT "FK_44a885fff2a1cc22631646a39e5" FOREIGN KEY ("idEvent") REFERENCES "Events"("idEvent") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "AskOptions" ADD CONSTRAINT "FK_4d16a36136a7ce578576196e11d" FOREIGN KEY ("idAsk") REFERENCES "Asks"("idAsk") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Answers" ADD CONSTRAINT "FK_91b8e1ca37805b494771af440dc" FOREIGN KEY ("idAsk") REFERENCES "Asks"("idAsk") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Answers" ADD CONSTRAINT "FK_5093a7739cfad4216f717115323" FOREIGN KEY ("idPostulation") REFERENCES "Postulations"("idPostulation") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Results" ADD CONSTRAINT "FK_e360464977a29934a3c6a521517" FOREIGN KEY ("idPostulation") REFERENCES "Postulations"("idPostulation") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Results" ADD CONSTRAINT "FK_603ea62fbfe07d7f5a52583f4ad" FOREIGN KEY ("idUserEval") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Postulations" ADD CONSTRAINT "FK_9811be705215267532987187891" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Postulations" ADD CONSTRAINT "FK_30080310840f881a795d1a3a4ad" FOREIGN KEY ("idEvent") REFERENCES "Events"("idEvent") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "EventParticipants" ADD CONSTRAINT "FK_b3ed11c2850679c84b9a93b482d" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "EventParticipants" ADD CONSTRAINT "FK_7e43572e2187f0555d2728dfae1" FOREIGN KEY ("idEvent") REFERENCES "Events"("idEvent") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Votes" ADD CONSTRAINT "FK_86857ac92b4857a088f55799b7a" FOREIGN KEY ("idEvent") REFERENCES "Events"("idEvent") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Votes" ADD CONSTRAINT "FK_2e93fb6f91b21b23e31275a7d20" FOREIGN KEY ("voterId") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Votes" ADD CONSTRAINT "FK_7a00e456ca7ea3cb494561ef3d8" FOREIGN KEY ("candidateId") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Users" ADD CONSTRAINT "FK_54bbf2bf161a4c679371f1533de" FOREIGN KEY ("idAccount") REFERENCES "Accounts"("idAccount") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "GeneralInfo" ADD CONSTRAINT "FK_a45ffc9ddef09d55d72a3f2abcd" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "ContactInfo" ADD CONSTRAINT "FK_214e121bf4c3c2cb819efa1ac29" FOREIGN KEY ("idUser") REFERENCES "Users"("idUser") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "EmailVerificationTokens" ADD CONSTRAINT "FK_537d3e56e2a911f763b6c006bc8" FOREIGN KEY ("idAccount") REFERENCES "Accounts"("idAccount") ON DELETE CASCADE ON UPDATE NO ACTION`,
+    );
+  }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE "EmailVerificationTokens" DROP CONSTRAINT "FK_537d3e56e2a911f763b6c006bc8"`);
-        await queryRunner.query(`ALTER TABLE "ContactInfo" DROP CONSTRAINT "FK_214e121bf4c3c2cb819efa1ac29"`);
-        await queryRunner.query(`ALTER TABLE "GeneralInfo" DROP CONSTRAINT "FK_a45ffc9ddef09d55d72a3f2abcd"`);
-        await queryRunner.query(`ALTER TABLE "Users" DROP CONSTRAINT "FK_54bbf2bf161a4c679371f1533de"`);
-        await queryRunner.query(`ALTER TABLE "Votes" DROP CONSTRAINT "FK_7a00e456ca7ea3cb494561ef3d8"`);
-        await queryRunner.query(`ALTER TABLE "Votes" DROP CONSTRAINT "FK_2e93fb6f91b21b23e31275a7d20"`);
-        await queryRunner.query(`ALTER TABLE "Votes" DROP CONSTRAINT "FK_86857ac92b4857a088f55799b7a"`);
-        await queryRunner.query(`ALTER TABLE "EventParticipants" DROP CONSTRAINT "FK_7e43572e2187f0555d2728dfae1"`);
-        await queryRunner.query(`ALTER TABLE "EventParticipants" DROP CONSTRAINT "FK_b3ed11c2850679c84b9a93b482d"`);
-        await queryRunner.query(`ALTER TABLE "Postulations" DROP CONSTRAINT "FK_30080310840f881a795d1a3a4ad"`);
-        await queryRunner.query(`ALTER TABLE "Postulations" DROP CONSTRAINT "FK_9811be705215267532987187891"`);
-        await queryRunner.query(`ALTER TABLE "Results" DROP CONSTRAINT "FK_603ea62fbfe07d7f5a52583f4ad"`);
-        await queryRunner.query(`ALTER TABLE "Results" DROP CONSTRAINT "FK_e360464977a29934a3c6a521517"`);
-        await queryRunner.query(`ALTER TABLE "Answers" DROP CONSTRAINT "FK_5093a7739cfad4216f717115323"`);
-        await queryRunner.query(`ALTER TABLE "Answers" DROP CONSTRAINT "FK_91b8e1ca37805b494771af440dc"`);
-        await queryRunner.query(`ALTER TABLE "AskOptions" DROP CONSTRAINT "FK_4d16a36136a7ce578576196e11d"`);
-        await queryRunner.query(`ALTER TABLE "TextsEvents" DROP CONSTRAINT "FK_44a885fff2a1cc22631646a39e5"`);
-        await queryRunner.query(`ALTER TABLE "Resources" DROP CONSTRAINT "FK_72b00dec8a1be85bc7b50fcef02"`);
-        await queryRunner.query(`ALTER TABLE "LifeWay" DROP CONSTRAINT "FK_2fc7720e90664e3b107f7e4f403"`);
-        await queryRunner.query(`ALTER TABLE "MediaSocial" DROP CONSTRAINT "FK_e1f9349c9d527adb5fb9ed7fb54"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_537d3e56e2a911f763b6c006bc"`);
-        await queryRunner.query(`DROP TABLE "EmailVerificationTokens"`);
-        await queryRunner.query(`DROP TABLE "ContactInfo"`);
-        await queryRunner.query(`DROP TABLE "GeneralInfo"`);
-        await queryRunner.query(`DROP TYPE "public"."GeneralInfo_genero_enum"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_54bbf2bf161a4c679371f1533d"`);
-        await queryRunner.query(`DROP TABLE "Users"`);
-        await queryRunner.query(`DROP TYPE "public"."Users_visibility_enum"`);
-        await queryRunner.query(`DROP TYPE "public"."Users_activitystatus_enum"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_86857ac92b4857a088f55799b7"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_7a00e456ca7ea3cb494561ef3d"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_2e93fb6f91b21b23e31275a7d2"`);
-        await queryRunner.query(`DROP TABLE "Votes"`);
-        await queryRunner.query(`DROP TABLE "Events"`);
-        await queryRunner.query(`DROP TYPE "public"."Events_status_enum"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_d3d2318656f7e161bca4a459d7"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_b3ed11c2850679c84b9a93b482"`);
-        await queryRunner.query(`DROP TABLE "EventParticipants"`);
-        await queryRunner.query(`DROP TABLE "Postulations"`);
-        await queryRunner.query(`DROP TYPE "public"."Postulations_status_enum"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_e360464977a29934a3c6a52151"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_e360464977a29934a3c6a52151"`);
-        await queryRunner.query(`DROP TABLE "Results"`);
-        await queryRunner.query(`DROP TYPE "public"."Results_result_enum"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_255212446e8092cd1d9ef366a9"`);
-        await queryRunner.query(`DROP TABLE "Answers"`);
-        await queryRunner.query(`DROP TABLE "Asks"`);
-        await queryRunner.query(`DROP TYPE "public"."Asks_typeask_enum"`);
-        await queryRunner.query(`DROP TABLE "AskOptions"`);
-        await queryRunner.query(`DROP TABLE "TextsEvents"`);
-        await queryRunner.query(`DROP TYPE "public"."TextsEvents_typetext_enum"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_72b00dec8a1be85bc7b50fcef0"`);
-        await queryRunner.query(`DROP TABLE "Resources"`);
-        await queryRunner.query(`DROP TYPE "public"."Resources_provider_enum"`);
-        await queryRunner.query(`DROP TYPE "public"."Resources_typeresource_enum"`);
-        await queryRunner.query(`DROP TABLE "LifeWay"`);
-        await queryRunner.query(`DROP TYPE "public"."LifeWay_visibility_enum"`);
-        await queryRunner.query(`DROP TYPE "public"."LifeWay_typelifeway_enum"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_e1f9349c9d527adb5fb9ed7fb5"`);
-        await queryRunner.query(`DROP TABLE "MediaSocial"`);
-        await queryRunner.query(`DROP TYPE "public"."MediaSocial_typemediasocial_enum"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_0c5666efc38b6f023b7814c73d"`);
-        await queryRunner.query(`DROP TABLE "Accounts"`);
-    }
-
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(
+      `ALTER TABLE "EmailVerificationTokens" DROP CONSTRAINT "FK_537d3e56e2a911f763b6c006bc8"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "ContactInfo" DROP CONSTRAINT "FK_214e121bf4c3c2cb819efa1ac29"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "GeneralInfo" DROP CONSTRAINT "FK_a45ffc9ddef09d55d72a3f2abcd"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Users" DROP CONSTRAINT "FK_54bbf2bf161a4c679371f1533de"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Votes" DROP CONSTRAINT "FK_7a00e456ca7ea3cb494561ef3d8"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Votes" DROP CONSTRAINT "FK_2e93fb6f91b21b23e31275a7d20"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Votes" DROP CONSTRAINT "FK_86857ac92b4857a088f55799b7a"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "EventParticipants" DROP CONSTRAINT "FK_7e43572e2187f0555d2728dfae1"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "EventParticipants" DROP CONSTRAINT "FK_b3ed11c2850679c84b9a93b482d"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Postulations" DROP CONSTRAINT "FK_30080310840f881a795d1a3a4ad"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Postulations" DROP CONSTRAINT "FK_9811be705215267532987187891"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Results" DROP CONSTRAINT "FK_603ea62fbfe07d7f5a52583f4ad"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Results" DROP CONSTRAINT "FK_e360464977a29934a3c6a521517"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Answers" DROP CONSTRAINT "FK_5093a7739cfad4216f717115323"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Answers" DROP CONSTRAINT "FK_91b8e1ca37805b494771af440dc"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "AskOptions" DROP CONSTRAINT "FK_4d16a36136a7ce578576196e11d"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "TextsEvents" DROP CONSTRAINT "FK_44a885fff2a1cc22631646a39e5"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "Resources" DROP CONSTRAINT "FK_72b00dec8a1be85bc7b50fcef02"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "LifeWay" DROP CONSTRAINT "FK_2fc7720e90664e3b107f7e4f403"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "MediaSocial" DROP CONSTRAINT "FK_e1f9349c9d527adb5fb9ed7fb54"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_537d3e56e2a911f763b6c006bc"`,
+    );
+    await queryRunner.query(`DROP TABLE "EmailVerificationTokens"`);
+    await queryRunner.query(`DROP TABLE "ContactInfo"`);
+    await queryRunner.query(`DROP TABLE "GeneralInfo"`);
+    await queryRunner.query(`DROP TYPE "public"."GeneralInfo_genero_enum"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_54bbf2bf161a4c679371f1533d"`,
+    );
+    await queryRunner.query(`DROP TABLE "Users"`);
+    await queryRunner.query(`DROP TYPE "public"."Users_visibility_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."Users_activitystatus_enum"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_86857ac92b4857a088f55799b7"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_7a00e456ca7ea3cb494561ef3d"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_2e93fb6f91b21b23e31275a7d2"`,
+    );
+    await queryRunner.query(`DROP TABLE "Votes"`);
+    await queryRunner.query(`DROP TABLE "Events"`);
+    await queryRunner.query(`DROP TYPE "public"."Events_status_enum"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_d3d2318656f7e161bca4a459d7"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_b3ed11c2850679c84b9a93b482"`,
+    );
+    await queryRunner.query(`DROP TABLE "EventParticipants"`);
+    await queryRunner.query(`DROP TABLE "Postulations"`);
+    await queryRunner.query(`DROP TYPE "public"."Postulations_status_enum"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_e360464977a29934a3c6a52151"`,
+    );
+    await queryRunner.query(`DROP TABLE "Results"`);
+    await queryRunner.query(`DROP TYPE "public"."Results_result_enum"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_255212446e8092cd1d9ef366a9"`,
+    );
+    await queryRunner.query(`DROP TABLE "Answers"`);
+    await queryRunner.query(`DROP TABLE "Asks"`);
+    await queryRunner.query(`DROP TYPE "public"."Asks_typeask_enum"`);
+    await queryRunner.query(`DROP TABLE "AskOptions"`);
+    await queryRunner.query(`DROP TABLE "TextsEvents"`);
+    await queryRunner.query(`DROP TYPE "public"."TextsEvents_typetext_enum"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_72b00dec8a1be85bc7b50fcef0"`,
+    );
+    await queryRunner.query(`DROP TABLE "Resources"`);
+    await queryRunner.query(`DROP TYPE "public"."Resources_provider_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."Resources_typeresource_enum"`);
+    await queryRunner.query(`DROP TABLE "LifeWay"`);
+    await queryRunner.query(`DROP TYPE "public"."LifeWay_visibility_enum"`);
+    await queryRunner.query(`DROP TYPE "public"."LifeWay_typelifeway_enum"`);
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_e1f9349c9d527adb5fb9ed7fb5"`,
+    );
+    await queryRunner.query(`DROP TABLE "MediaSocial"`);
+    await queryRunner.query(
+      `DROP TYPE "public"."MediaSocial_typemediasocial_enum"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_0c5666efc38b6f023b7814c73d"`,
+    );
+    await queryRunner.query(`DROP TABLE "Accounts"`);
+  }
 }
