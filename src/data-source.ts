@@ -18,6 +18,7 @@ import { AskOption } from './modules/core/objects/events-data-module/asks-option
 import { Answer } from './modules/core/objects/events-data-module/answers/answers.entity';
 import { Resource } from './modules/core/objects/application-data-module/resources/resource.entity';
 import { EmailVerificationToken } from './modules/core/objects/application-data-module/auth/email-verification-tokens';
+import { Ask } from './modules/core/objects/events-data-module/asks/asks.entity';
 
 config(); // Carga el .env para desarrollo local
 
@@ -44,6 +45,7 @@ export const AppDataSource = new DataSource({
     Event,
     EventParticipant,
     AskOption,
+    Ask,
     Answer,
     Resource,
     EmailVerificationToken,
