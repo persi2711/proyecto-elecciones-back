@@ -31,6 +31,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Token not valid');
     }
 
-    return user;
+    return {
+      Account: user,
+      exp: payload.exp, // <-- Aquí es donde "rescatamos" la fecha del token
+    };
   }
 }

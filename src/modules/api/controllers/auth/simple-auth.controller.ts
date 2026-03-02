@@ -1,10 +1,28 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { SimpleLoginDto } from '../../contracts/auth/login-contracts/simple-login.dto';
 
 import { SimpleRegisterDto } from '../../contracts/auth/register-contracts/simple-register.dto';
 import { SimpleAuthBroker } from 'src/modules/application/brokers/auth/simple-auth-broker.service';
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from '../../decorators/get-user.decorator';
+import { User } from 'src/modules/core/objects/user-data-module/users/users.entity';
+import { ValidateSesion } from '../../decorators/validate-sesion.decorator';
 
+@ApiBearerAuth()
 @ApiTags('Simple-auth')
 @Controller('simple-auth')
 export class SimpleAuthController {
@@ -66,5 +84,16 @@ export class SimpleAuthController {
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   async sendConfirmEmail(@Body() dto: { token: string }) {
     return this.simpleAuthBroker.sendConfirmEmail(dto);
+  }
+
+  @UseGuards(AuthGuard())
+  @Get('validate-sesion')
+  validateSesionToken(
+    @ValidateSesion() result: { user: User; expiresAt: string },
+  ) {
+    return {
+      user: result.user,
+      expiresAt: result.expiresAt,
+    };
   }
 }

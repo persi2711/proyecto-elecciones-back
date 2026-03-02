@@ -31,7 +31,6 @@ export class GoogleAutBroker {
     }
     const tokenResult = this.authService.getJwtToken({
       id: result.user!.idAccount,
-      email: result.user!.email,
       type: 'Sesion',
     });
     return { token: tokenResult, type: 'Sesion' };
@@ -41,7 +40,6 @@ export class GoogleAutBroker {
     const account = await this.registerManagerService.createAccountGoogle(dto);
     const token = this.authService.getJwtToken({
       id: account.idAccount,
-      email: account.email,
       type: 'Sesion',
     });
     return { token: token };

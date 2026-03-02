@@ -41,7 +41,6 @@ export class SimpleAuthBroker {
     }
     const token = this.authService.getJwtToken({
       id: account.idAccount,
-      email: account.email,
       type: 'Sesion',
     });
     return { token: token, verified: true };
@@ -51,7 +50,6 @@ export class SimpleAuthBroker {
     const account = await this.registerManagerService.verifyAccount(dto.token);
     const jwt = this.authService.getJwtToken({
       id: account.idAccount,
-      email: account.email,
       type: 'Sesion',
     });
     return { token: jwt };

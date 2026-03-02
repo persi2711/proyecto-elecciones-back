@@ -4,19 +4,25 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 
-export const GetUser = createParamDecorator(
+export const ValidateSesion = createParamDecorator(
   (data: string, ctx: ExecutionContext) => {
     const req = ctx.switchToHttp().getRequest();
+    const expirationInSeconds = req.authInfo?.exp || req.user?.exp;
 
-    // 1. Validamos que la estrategia de Passport/AuthGuard haya inyectado la cuenta
-    const account = req.user;
+    if (!expirationInSeconds) {
+      throw new InternalServerErrorException(
+        'No se pudo determinar la expiración del token',
+      );
+    }
+
+    const account = req.user.Account;
+
     if (!account) {
       throw new InternalServerErrorException(
         'Account not found in request (AuthGuard missing?)',
       );
     }
 
-    // 2. Extraemos el primer usuario (perfil)
     const user = account.users?.[0];
 
     if (!user) {
@@ -25,12 +31,13 @@ export const GetUser = createParamDecorator(
       );
     }
 
-    // 3. Re-estructuramos: El usuario ahora contiene su cuenta,
-    // pero evitamos la recursión infinita eliminando la lista de usuarios de la cuenta
     const { users, ...accountData } = account;
     user.account = accountData;
 
     // 4. Retornamos el objeto user completo o una propiedad específica
-    return data ? user[data] : user;
+    return {
+      user: user,
+      expiresAt: new Date(expirationInSeconds * 1000).toISOString(),
+    };
   },
 );
